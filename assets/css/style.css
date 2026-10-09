@@ -80,7 +80,8 @@ button, input, select, textarea { font: inherit; }
 
 /* navigation : etiquettes de cable */
 .nav-cable { position: static; }
-.nav-mono { position: absolute; left: var(--gouttiere); top: 1.2rem; z-index: 51; display: grid; place-items: center; width: 54px; height: 54px; border: 3px solid var(--encre); border-radius: 10px; background: #fff; color: var(--encre); font: 800 1.5rem var(--titre); font-stretch: 75%; text-decoration: none; box-shadow: 3px 3px 0 var(--encre); }
+.nav-mono { position: absolute; left: var(--gouttiere); top: 1.2rem; z-index: 51; display: block; text-decoration: none; }
+.nav-mono img { display: block; width: auto; height: 45px; }
 .nav-liste { position: fixed; z-index: 50; right: 0; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: .4rem; padding: 1.2rem 0; }
 .nav-liste::before { content: ""; position: absolute; right: 24px; top: -40vh; bottom: -40vh; width: 7px; border-radius: 4px; background: var(--encre); opacity: .85; z-index: -1; }
 .nav-liste .etiq { position: relative; display: block; margin-right: 10px; padding: .9rem .4rem 1.6rem; border: 2px solid var(--encre); border-radius: 6px; background: #fff; color: var(--encre); font-weight: 700; font-size: .86rem; line-height: 1; text-decoration: none; writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; transition: background .15s, color .15s; }
@@ -105,7 +106,7 @@ button, input, select, textarea { font: inherit; }
 .badge { position: absolute; left: 50%; top: 245px; width: 300px; margin-left: -150px; padding: 0 18px 18px; border: 3px solid var(--encre); border-radius: 18px; background: #fff; box-shadow: 10px 12px 0 rgba(22, 33, 44, .22); transform: rotate(4deg); transform-origin: 50% -60px; }
 .badge-trou { width: 70px; height: 14px; margin: 14px auto 0; border: 2px solid var(--encre); border-radius: 7px; background: var(--papier); }
 .badge-haut { display: flex; justify-content: space-between; align-items: center; margin-top: .7rem; font-weight: 700; font-size: .92rem; }
-.badge-haut b { font: 800 1.4rem var(--titre); font-stretch: 75%; }
+.badge-haut img { display: block; width: auto; height: 36px; }
 .badge-photo { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; margin-top: .7rem; border: 3px solid var(--encre); border-radius: 10px; }
 .badge-nom { margin-top: .8rem; font: 800 2rem/1 var(--titre); font-stretch: 75%; }
 .badge-sous { color: var(--encre-doux); font-size: .92rem; }
@@ -347,7 +348,8 @@ button, input, select, textarea { font: inherit; }
 
 /* mobile */
 @media (max-width: 760px) {
-  .nav-mono { width: 46px; height: 46px; font-size: 1.25rem; top: .9rem; }
+  .nav-mono { top: .9rem; }
+  .nav-mono img { height: 40px; }
   .hero { grid-template-columns: minmax(0, 1fr); padding-top: 5.5rem; min-height: 0; }
   .nom { font-size: 23vw; }
   .hero-droite { min-height: 880px; }
@@ -498,3 +500,11 @@ figure.large figcaption, .schema-fig figcaption, .cap figcaption { margin-top: .
 @media print {
   .reveal { opacity: 1 !important; transform: none !important; }
 }
+
+/* ---------- defilement accroche section par section ----------
+   mandatory : le defilement s'arrete toujours au debut d'une grande section.
+   une section plus haute que l'ecran se parcourt librement (le navigateur ne force pas
+   l'accroche tant qu'elle couvre l'ecran) ; on passe a la suivante une fois sa fin atteinte. */
+html { scroll-snap-type: y mandatory; }
+main > header, main > section, main > nav { scroll-snap-align: start; }
+.pied { scroll-snap-align: end; }
