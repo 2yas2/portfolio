@@ -505,8 +505,12 @@ figure.large figcaption, .schema-fig figcaption, .cap figcaption { margin-top: .
    html est le conteneur qui defile : le defilement s'arrete au debut de chaque grande section.
    body doit rester en overflow-x: clip (et non hidden) : hidden en ferait un conteneur de
    defilement qui capterait les sections, et l'accroche ne marcherait plus.
-   une section plus haute que l'ecran se parcourt librement jusqu'a sa fin. */
-html { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; }
-main > section { min-height: 100vh; }
-main > header, main > section, main > nav { scroll-snap-align: start; }
-.pied { scroll-snap-align: end; }
+   une section plus haute que l'ecran se parcourt librement jusqu'a sa fin.
+   scroll-snap-stop: always : un lancer rapide (au doigt surtout) s'arrete a chaque section
+   au lieu d'en franchir plusieurs. reserve a l'ecran : a l'impression, tout reste comme avant. */
+@media screen {
+  html { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; }
+  main > section { min-height: 100vh; }
+  main > header, main > section, main > nav { scroll-snap-align: start; scroll-snap-stop: always; }
+  .pied { scroll-snap-align: end; }
+}
