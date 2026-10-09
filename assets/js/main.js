@@ -203,3 +203,33 @@
     });
   }
 })();
+
+// visionneuse des captures (clavier : fleches et echap)
+(function () {
+  var dlg = document.querySelector(".visionneuse");
+  var liens = Array.prototype.slice.call(document.querySelectorAll(".cap-lien"));
+  if (!dlg || !liens.length || typeof dlg.showModal !== "function") return;
+  var img = dlg.querySelector("img"), leg = dlg.querySelector("figcaption"), compte = dlg.querySelector(".vis-compte");
+  var i = 0, origine = null;
+  var montrer = function (k) {
+    i = (k + liens.length) % liens.length;
+    var a = liens[i];
+    img.src = a.dataset.large;
+    img.alt = a.querySelector("img").alt;
+    leg.textContent = a.dataset.legende;
+    compte.textContent = (i + 1) + " / " + liens.length;
+  };
+  liens.forEach(function (a, k) {
+    a.addEventListener("click", function (e) { e.preventDefault(); origine = a; montrer(k); dlg.showModal(); });
+  });
+  dlg.querySelector(".vis-prec").addEventListener("click", function () { montrer(i - 1); });
+  dlg.querySelector(".vis-suiv").addEventListener("click", function () { montrer(i + 1); });
+  dlg.querySelector(".vis-fermer").addEventListener("click", function () { dlg.close(); });
+  dlg.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowLeft") { e.preventDefault(); montrer(i - 1); }
+    if (e.key === "ArrowRight") { e.preventDefault(); montrer(i + 1); }
+  });
+  dlg.addEventListener("click", function (e) { if (e.target === dlg) dlg.close(); });
+  dlg.addEventListener("close", function () { if (origine) origine.focus(); });
+  if (liens.length < 2) { dlg.querySelector(".vis-prec").hidden = true; dlg.querySelector(".vis-suiv").hidden = true; }
+})();
