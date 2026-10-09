@@ -28,7 +28,7 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; overflow-x: clip; }
-body { margin: 0; background: var(--papier); color: var(--encre); font-family: var(--texte); font-size: 1.0625rem; line-height: 1.6; overflow-x: hidden; }
+body { margin: 0; background: var(--papier); color: var(--encre); font-family: var(--texte); font-size: 1.0625rem; line-height: 1.6; overflow-x: clip; }
 img, svg { max-width: 100%; }
 h1, h2, h3, p, dl, dd, figure { margin: 0; }
 h1, h2, h3 { text-wrap: balance; }
@@ -502,9 +502,11 @@ figure.large figcaption, .schema-fig figcaption, .cap figcaption { margin-top: .
 }
 
 /* ---------- defilement accroche section par section ----------
-   mandatory : le defilement s'arrete toujours au debut d'une grande section.
-   une section plus haute que l'ecran se parcourt librement (le navigateur ne force pas
-   l'accroche tant qu'elle couvre l'ecran) ; on passe a la suivante une fois sa fin atteinte. */
-html { scroll-snap-type: y mandatory; }
+   html est le conteneur qui defile : le defilement s'arrete au debut de chaque grande section.
+   body doit rester en overflow-x: clip (et non hidden) : hidden en ferait un conteneur de
+   defilement qui capterait les sections, et l'accroche ne marcherait plus.
+   une section plus haute que l'ecran se parcourt librement jusqu'a sa fin. */
+html { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; }
+main > section { min-height: 100vh; }
 main > header, main > section, main > nav { scroll-snap-align: start; }
 .pied { scroll-snap-align: end; }
