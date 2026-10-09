@@ -2,40 +2,43 @@
 (function () {
   var calme = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // apparitions au defilement : fondu et leger glissement vers le haut des blocs qui entrent a l'ecran
+  // apparitions au defilement : fondu et glissement vers le haut, une seule fois, en descendant
   if (!calme && "IntersectionObserver" in window) {
-    var cibles = Array.prototype.slice.call(document.querySelectorAll(
-      ".section .conteneur > *, .planche, .chantier, .kit-objet, .comp-groupe, .interet, .cap, .fonctions > li, .erreur-404 .conteneur > *, .pied-grille > *"
-    ));
-    // on garde les blocs les plus fins : un conteneur qui englobe d'autres cibles ne bouge pas lui-meme
-    cibles = cibles.filter(function (el) {
-      return !cibles.some(function (autre) { return autre !== el && el.contains(autre); });
-    });
-    var hauteur = window.innerHeight;
-    var apparition = new IntersectionObserver(function (entrees) {
+    var SEL_REVEAL = "main .titre-ligne, main .titre-section, main section p, main section h3, .planche, .chantier, .kit-objet, .plaque, "
+      + ".filtres, .baie-panneau, .comp-groupe, .frise-zone, .etapes > li, .interet, .formulaire, .contact-cote, .schema-fig, .cap, "
+      + ".fonctions > li, .texte-long > *, .carte-note, .texte-legal > *, .nav-projets-grille > *, .pied-grille > *";
+    var afficherSansAnim = function (el) {
+      el.classList.remove("reveal", "is-visible");
+      el.style.removeProperty("--delai");
+    };
+    var reveal = new IntersectionObserver(function (entrees) {
       var rang = 0;
       entrees.forEach(function (en) {
         if (!en.isIntersecting) return;
         var el = en.target;
-        apparition.unobserve(el);
+        reveal.unobserve(el);
+        // arrive par le haut (l'utilisateur remonte) : affiche sans animation
+        if (en.boundingClientRect.top < 0) return afficherSansAnim(el);
         el.style.setProperty("--delai", Math.min(rang++, 5) * 90 + "ms");
-        el.classList.add("visible");
-        // une fois arrive, on rend l'element a ses transitions d'origine (survol, etc.)
+        el.classList.add("is-visible");
+        // une fois en place, l'element retrouve ses transitions d'origine (survol, etc.)
         var fin = function (e) {
           if (e && e.target !== el) return;
           el.removeEventListener("transitionend", fin);
-          el.classList.remove("apparait", "visible");
-          el.style.removeProperty("--delai");
+          afficherSansAnim(el);
         };
         el.addEventListener("transitionend", fin);
-        setTimeout(fin, 1500);
+        setTimeout(fin, 1600);
       });
     }, { threshold: 0 });
-    cibles.forEach(function (el) {
+    var hauteur = window.innerHeight;
+    document.querySelectorAll(SEL_REVEAL).forEach(function (el) {
+      // un bloc deja anime par un parent ne bouge pas une seconde fois
+      if (el.parentElement.closest(SEL_REVEAL)) return;
       // ce qui est deja visible au chargement reste en place, sans clignotement
       if (el.getBoundingClientRect().top < hauteur) return;
-      el.classList.add("apparait");
-      apparition.observe(el);
+      el.classList.add("reveal");
+      reveal.observe(el);
     });
   }
 
