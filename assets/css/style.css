@@ -489,3 +489,12 @@ figure.large figcaption, .schema-fig figcaption, .cap figcaption { margin-top: .
 .imp-titre { margin-top: 3rem; margin-bottom: 0; }
 
 .galerie.seule { grid-template-columns: minmax(0, 1fr); max-width: 60rem; }
+
+/* ---------- apparitions au defilement (classes posees par main.js, rien sans javascript) ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .apparait { opacity: 0; translate: 0 28px; transition: opacity .7s ease var(--delai, 0s), translate .7s cubic-bezier(.2, .7, .2, 1) var(--delai, 0s); }
+  .apparait.visible { opacity: 1; translate: 0 0; }
+}
+@media print {
+  .apparait { opacity: 1 !important; translate: none !important; }
+}

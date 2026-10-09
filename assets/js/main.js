@@ -2,6 +2,43 @@
 (function () {
   var calme = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  // apparitions au defilement : fondu et leger glissement vers le haut des blocs qui entrent a l'ecran
+  if (!calme && "IntersectionObserver" in window) {
+    var cibles = Array.prototype.slice.call(document.querySelectorAll(
+      ".section .conteneur > *, .planche, .chantier, .kit-objet, .comp-groupe, .interet, .cap, .fonctions > li, .erreur-404 .conteneur > *, .pied-grille > *"
+    ));
+    // on garde les blocs les plus fins : un conteneur qui englobe d'autres cibles ne bouge pas lui-meme
+    cibles = cibles.filter(function (el) {
+      return !cibles.some(function (autre) { return autre !== el && el.contains(autre); });
+    });
+    var hauteur = window.innerHeight;
+    var apparition = new IntersectionObserver(function (entrees) {
+      var rang = 0;
+      entrees.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        var el = en.target;
+        apparition.unobserve(el);
+        el.style.setProperty("--delai", Math.min(rang++, 5) * 90 + "ms");
+        el.classList.add("visible");
+        // une fois arrive, on rend l'element a ses transitions d'origine (survol, etc.)
+        var fin = function (e) {
+          if (e && e.target !== el) return;
+          el.removeEventListener("transitionend", fin);
+          el.classList.remove("apparait", "visible");
+          el.style.removeProperty("--delai");
+        };
+        el.addEventListener("transitionend", fin);
+        setTimeout(fin, 1500);
+      });
+    }, { threshold: 0 });
+    cibles.forEach(function (el) {
+      // ce qui est deja visible au chargement reste en place, sans clignotement
+      if (el.getBoundingClientRect().top < hauteur) return;
+      el.classList.add("apparait");
+      apparition.observe(el);
+    });
+  }
+
   // navigation : etiquette de la section visible
   var etiqs = document.querySelectorAll(".nav-liste .etiq[href*='#']");
   if ("IntersectionObserver" in window && etiqs.length) {
